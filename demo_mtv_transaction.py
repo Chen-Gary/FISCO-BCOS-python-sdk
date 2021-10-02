@@ -1,17 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-'''
-  FISCO BCOS/Python-SDK is a python client for FISCO BCOS2.0 (https://github.com/FISCO-BCOS/)
-  FISCO BCOS/Python-SDK is free software: you can redistribute it and/or modify it under the
-  terms of the MIT License as published by the Free Software Foundation. This project is
-  distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. Thanks for
-  authors and contributors of eth-abi, eth-account, eth-hash，eth-keys, eth-typing, eth-utils,
-  rlp, eth-rlp , hexbytes ... and relative projects
-  @author: kentzhang
-  @date: 2019-06
-'''
+
 from client.contractnote import ContractNote
 #from client.bcosclient import BcosClient
 from client.bcosclienteth import BcosClientEth
@@ -23,93 +13,82 @@ from client.bcoserror import BcosException, BcosError
 from client_config import client_config
 import sys
 import traceback
-# 从文件加载abi定义
-# if os.path.isfile(client_config.solc_path) or os.path.isfile(client_config.solcjs_path):
-#     Compiler.compile_file("contracts/HelloWorld.sol")
-#     Compiler.compile_file("contracts/SimpleInfo.sol")
+
+
+# 接口：私钥签名交易demo
+def HelloWorld_set(privateKey, newStr):
+    try:
+        # 使用私钥初始化client
+        client = BcosClientEth(privateKey)
+
+        # 签名交易
+        args = [newStr]
+        receipt = client.sendRawTransactionGetReceipt(to_address, contract_abi, "set", args)
+        print("receipt:", receipt)
+
+    except BcosException as e:
+        print("execute demo_transaction failed ,BcosException for: {}".format(e))
+        traceback.print_exc()
+    except BcosError as e:
+        print("execute demo_transaction failed ,BcosError for: {}".format(e))
+        traceback.print_exc()
+    except Exception as e:
+        client.finish()
+        traceback.print_exc()
+    client.finish()
+
+
+# 接口：从区块链上读数据（无需私钥）
+def HelloWorld_get():
+    try:
+        # 初始化client (不使用私钥)
+        client = BcosClientEth(dummy_privateKey)
+
+        # 读数据
+        res = client.call(to_address, contract_abi, "get")
+        print("call getbalance result:", res)
+
+    except BcosException as e:
+        print("execute demo_transaction failed ,BcosException for: {}".format(e))
+        traceback.print_exc()
+    except BcosError as e:
+        print("execute demo_transaction failed ,BcosError for: {}".format(e))
+        traceback.print_exc()
+    except Exception as e:
+        client.finish()
+        traceback.print_exc()
+    client.finish()
+
+
+
+# 测试函数
+def demo():
+    # 初始化以太坊钱包（以下公私钥由Metamask生成）
+    #address:     0x820f3E244D73c5bF5c92A34Cc0B56E5912129f55
+    #privateKey:  0x3e14b5b682d9768a1e37a39a6510e51b813b071c05c33b378157fbbb10c3a7ae
+    user_privateKey = "0x3e14b5b682d9768a1e37a39a6510e51b813b071c05c33b378157fbbb10c3a7ae"
+
+    print("================================================================")
+    print("================== HelloWorld_get ==============================")
+    HelloWorld_get()
+    print("================== HelloWorld_set ==============================")
+    HelloWorld_set(user_privateKey, "你好世界，测试字符串，随便换着输点啥")
+    print("================== HelloWorld_get ==============================")
+    HelloWorld_get()
+    print("================================================================")
+
+
+
+
+# 运行入口
+
+# 声明全局变量: contract_abi, to_address, dummy_privateKey
+# 加载合约ABI (这样python才能知道要如何与合约进行交互)
 abi_file = "contracts/HelloWorld.abi"
-#abi_file = "contracts/SimpleInfo.abi"
 data_parser = DatatypeParser()
 data_parser.load_abi_file(abi_file)
-contract_abi = data_parser.contract_abi
+contract_abi = data_parser.contract_abi                    #全局变量，在接口中被使用
+to_address = "0x60b364cab35c19678c6fa3d4a6cdf705a2adea89"  #全局变量，在接口中被使用 (合约地址)
+dummy_privateKey = "0x3c8ebf53a8b84f06a09f0207a314f5aed3d5a123c1539d3485f0afd7b36c77f6"  #全局变量，从区块链上读数据实际不需要私钥签名，但由于sdk限制，在此设定一个无用的私钥用于初始化client("address":"0xab5159fa9222e4787e53fb67394bf65c23d88ac9")
 
-try:
-    #"address":"0xab5159fa9222e4787e53fb67394bf65c23d88ac9"
-    #"privateKey":"3c8ebf53a8b84f06a09f0207a314f5aed3d5a123c1539d3485f0afd7b36c77f6"
-    client = BcosClientEth("0x3c8ebf53a8b84f06a09f0207a314f5aed3d5a123c1539d3485f0afd7b36c77f6")
-    print(client.getinfo())
-
-    # # 部署合约
-    # print("\n>>Deploy:----------------------------------------------------------")
-    # with open("contracts/SimpleInfo.bin", 'r') as load_f:
-    #     contract_bin = load_f.read()
-    #     load_f.close()
-    # result = client.deploy(contract_bin)
-    # print("deploy", result)
-    # print("new address : ", result["contractAddress"])
-    # contract_name = os.path.splitext(os.path.basename(abi_file))[0]
-    # memo = "tx:" + result["transactionHash"]
-    # # 把部署结果存入文件备查
-    # ContractNote.save_address_to_contract_note(contract_name,
-    #                                            result["contractAddress"])
-
-    # # 发送交易，调用一个改写数据的接口
-    # print("\n>>sendRawTransaction:----------------------------------------------------")
-    # to_address = result['contractAddress']  # use new deploy address
-    # args = ['simplename', 2024, to_checksum_address('0x7029c502b4F824d19Bd7921E9cb74Ef92392FB1c')]
-
-    # receipt = client.sendRawTransactionGetReceipt(to_address, contract_abi, "set", args)
-    # print("receipt:", receipt)
-
-    # # 解析receipt里的log
-    # print("\n>>parse receipt and transaction:--------------------------------------")
-    # txhash = receipt['transactionHash']
-    # print("transaction hash: ", txhash)
-    # logresult = data_parser.parse_event_logs(receipt["logs"])
-    # i = 0
-    # for log in logresult:
-    #     if 'eventname' in log:
-    #         i = i + 1
-    #         print("{}): log name: {} , data: {}".format(i, log['eventname'], log['eventdata']))
-    # # 获取对应的交易数据，解析出调用方法名和参数
-
-    # txresponse = client.getTransactionByHash(txhash)
-    # inputresult = data_parser.parse_transaction_input(txresponse['input'])
-    # print("transaction input parse:", txhash)
-    # print(inputresult)
-
-    # # 解析该交易在receipt里输出的output,即交易调用的方法的return值
-    # outputresult = data_parser.parse_receipt_output(inputresult['name'], receipt['output'])
-    # print("receipt output :", outputresult)
-
-    # 调用一下call，获取数据
-    to_address = "0x60b364cab35c19678c6fa3d4a6cdf705a2adea89"
-    print("\n>>Call:------------------------------------------------------------------------")
-    res = client.call(to_address, contract_abi, "get")
-    print("call getbalance result:", res)
-    # res = client.call(to_address, contract_abi, "getbalance1", [100])
-    # print("call getbalance1 result:", res)
-    # res = client.call(to_address, contract_abi, "getname")
-    # print("call getname:", res)
-    # res = client.call(to_address, contract_abi, "getall")
-    # print("call getall result:", res)
-    print("done,demo_tx,total req {}".format(client.request_counter))
-
-    args = ['hello world 1002 2']
-    receipt = client.sendRawTransactionGetReceipt(to_address, contract_abi, "set", args)
-    print("receipt:", receipt)
-
-    res = client.call(to_address, contract_abi, "get")
-    print("call getbalance result:", res)
-
-except BcosException as e:
-    print("execute demo_transaction failed ,BcosException for: {}".format(e))
-    traceback.print_exc()
-except BcosError as e:
-    print("execute demo_transaction failed ,BcosError for: {}".format(e))
-    traceback.print_exc()
-except Exception as e:
-    client.finish()
-    traceback.print_exc()
-client.finish()
-sys.exit(0)
+demo()
