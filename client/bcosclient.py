@@ -68,28 +68,24 @@ class BcosClient:
     # load the account from keyfile
 
     def load_default_account(self):
-        #"address":"0xab5159fa9222e4787e53fb67394bf65c23d88ac9"
-        #"privateKey":"3c8ebf53a8b84f06a09f0207a314f5aed3d5a123c1539d3485f0afd7b36c77f6"
-        dummy_privkey = "0x3c8ebf53a8b84f06a09f0207a314f5aed3d5a123c1539d3485f0afd7b36c77f6"
-        self.default_from_account_signer = Signer_ECDSA.from_privkey(dummy_privkey)
-        # if self.default_from_account_signer is not None:
-        #     return  # 不需要重复加载
+        if self.default_from_account_signer is not None:
+            return  # 不需要重复加载
 
-        # if client_config.crypto_type == CRYPTO_TYPE_GM:
-        #     # 加载默认国密账号
-        #     self.gm_account_file = "{}/{}".format(client_config.account_keyfile_path,
-        #                                           client_config.gm_account_keyfile)
-        #     self.default_from_account_signer = Signer_GM.from_key_file(
-        #         self.gm_account_file, client_config.gm_account_password)
-        #     return
+        if client_config.crypto_type == CRYPTO_TYPE_GM:
+            # 加载默认国密账号
+            self.gm_account_file = "{}/{}".format(client_config.account_keyfile_path,
+                                                  client_config.gm_account_keyfile)
+            self.default_from_account_signer = Signer_GM.from_key_file(
+                self.gm_account_file, client_config.gm_account_password)
+            return
 
-        # # 默认的 ecdsa 账号
-        # # check account keyfile
-        # if client_config.crypto_type == CRYPTO_TYPE_ECDSA:
-        #     self.key_file = "{}/{}".format(client_config.account_keyfile_path,
-        #                                    client_config.account_keyfile)
-        #     self.default_from_account_signer = Signer_ECDSA.from_key_file(
-        #         self.key_file, client_config.account_password)
+        # 默认的 ecdsa 账号
+        # check account keyfile
+        if client_config.crypto_type == CRYPTO_TYPE_ECDSA:
+            self.key_file = "{}/{}".format(client_config.account_keyfile_path,
+                                           client_config.account_keyfile)
+            self.default_from_account_signer = Signer_ECDSA.from_key_file(
+                self.key_file, client_config.account_password)
 
     def init(self):
         try:
