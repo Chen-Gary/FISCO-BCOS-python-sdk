@@ -23,10 +23,11 @@ from client.bcoserror import BcosException, BcosError
 import traceback
 import json
 # 从文件加载abi定义
-if os.path.isfile(client_config.solc_path) or os.path.isfile(client_config.solcjs_path):
-    Compiler.compile_file("contracts/HelloWorld.sol")
-    Compiler.compile_file("contracts/SimpleInfo.sol")
-abi_file = "contracts/SimpleInfo.abi"
+# if os.path.isfile(client_config.solc_path) or os.path.isfile(client_config.solcjs_path):
+#     Compiler.compile_file("contracts/HelloWorld.sol")
+#     Compiler.compile_file("contracts/SimpleInfo.sol")
+abi_file = "contracts/HelloWorld.abi"
+#abi_file = "contracts/SimpleInfo.abi"
 data_parser = DatatypeParser()
 data_parser.load_abi_file(abi_file)
 contract_abi = data_parser.contract_abi
