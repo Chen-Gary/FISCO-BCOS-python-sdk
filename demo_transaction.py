@@ -13,7 +13,8 @@
   @date: 2019-06
 '''
 from client.contractnote import ContractNote
-from client.bcosclient import BcosClient
+#from client.bcosclient import BcosClient
+from client.bcosclienteth import BcosClientEth
 import os
 from eth_utils import to_checksum_address
 from client.datatype_parser import DatatypeParser
@@ -33,7 +34,9 @@ data_parser.load_abi_file(abi_file)
 contract_abi = data_parser.contract_abi
 
 try:
-    client = BcosClient()
+    #"address":"0xab5159fa9222e4787e53fb67394bf65c23d88ac9"
+    #"privateKey":"3c8ebf53a8b84f06a09f0207a314f5aed3d5a123c1539d3485f0afd7b36c77f6"
+    client = BcosClientEth("0x3c8ebf53a8b84f06a09f0207a314f5aed3d5a123c1539d3485f0afd7b36c77f6")
     print(client.getinfo())
 
     # # 部署合约
@@ -92,7 +95,7 @@ try:
     # print("call getall result:", res)
     print("done,demo_tx,total req {}".format(client.request_counter))
 
-    args = ['hello world 1002']
+    args = ['hello world 1002 2']
     receipt = client.sendRawTransactionGetReceipt(to_address, contract_abi, "set", args)
     print("receipt:", receipt)
 

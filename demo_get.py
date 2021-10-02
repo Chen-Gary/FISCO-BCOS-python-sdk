@@ -13,7 +13,8 @@
   @date: 2019-06
 """
 
-from client.bcosclient import BcosClient
+#from client.bcosclient import BcosClient
+from client.bcosclienteth import BcosClientEth
 import os
 from client.stattool import StatTool
 from client.datatype_parser import DatatypeParser
@@ -39,7 +40,9 @@ int(num,16)  hex -> int
 hex(num)  : int -> hex
 """
 try:
-    client = BcosClient()
+    #"address":"0xab5159fa9222e4787e53fb67394bf65c23d88ac9"
+    #"privateKey":"3c8ebf53a8b84f06a09f0207a314f5aed3d5a123c1539d3485f0afd7b36c77f6"
+    client = BcosClientEth("0x3c8ebf53a8b84f06a09f0207a314f5aed3d5a123c1539d3485f0afd7b36c77f6")
     info = client.getinfo()
     print("client info:", info)
     stat = StatTool.begin()
