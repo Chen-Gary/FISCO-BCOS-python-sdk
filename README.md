@@ -1,3 +1,7 @@
+魔改版FISCO BCOS - Python SDK：支持使用以太坊私钥签名
+
+
+
 # Python SDK
 
 ![](./images/FISCO_BCOS_Logo.svg)
@@ -141,7 +145,7 @@ Python SDK支持使用[Channel协议](https://fisco-bcos-documentation.readthedo
     channel_listen_port=20200
     jsonrpc_listen_port=8545
 ```
-    
+
 切换到python-sdk目录，修改 client_config.py 文件中`channel_host`为实际的IP，`channel_port`为上步获取的`channel_listen_port`：
 
 ```bash
